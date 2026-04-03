@@ -1,0 +1,14 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Markdown
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-overview-row-third-build-column-panel-markdown
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    markdown: |
+      - **Status:** ✅ Success
+      - **Build Number:** 21fb40f8-793d-4013-bf3c-e0b7682813f7
+      - **Duration:** 5 mins
+      - **Triggered By:** kubepattern-trigger
+      - **Date:** 2024-06-15 14:30 UTC
+      - **Details:** [View Build Details](http://ci-cd.example.com/builds/1024)

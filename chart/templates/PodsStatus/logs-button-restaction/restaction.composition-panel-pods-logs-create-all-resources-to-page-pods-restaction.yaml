@@ -1,0 +1,157 @@
+
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  annotations:
+    krateo.io/verbose: "true"
+  name: {{ .Values.global.compositionName }}-create-all-resources-to-page-pods-restaction
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: listResourcesToCreateandDelete
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-get-pods-to-create-delete-resources-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    verb: GET
+    endpointRef:
+      name: snowplow-endpoint
+      namespace: {{ .Values.global.krateoNamespace }}
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    errorKey: listResourcesToCreateandDeleteError
+    exportJwt: true
+    filter: ".listResourcesToCreateandDelete.status? // {}"
+  - name: createrestactions
+    continueOnError: true
+    errorKey: createrestactionsError
+    dependsOn: 
+      name: listResourcesToCreateandDelete
+      iterator: .listResourcesToCreateandDelete.restactions.restactionsToCreate
+    path: ${ "/apis/templates.krateo.io/v1/namespaces/" + (.namespace ) + "/restactions/" }
+    verb: POST
+    headers:
+      - "Content-Type: application/json"
+    payload: |
+      ${
+        {
+          "kind": "RESTAction",
+          "apiVersion": "templates.krateo.io/v1",
+          "metadata": {
+            "name": .name,
+            "namespace": .namespace,
+            "labels": {
+              "krateo.io/managed-by": "{{ .Values.global.compositionName }}-restaction-for-pods"
+            }
+          },
+          "spec": {
+            "api": [
+              {
+                "name": "text",
+                "path": "/api/v1/namespaces/{{ .Values.global.compositionName }}/pods/" + .name + "/log?tailLines=100",
+                "verb": "GET",
+                "endpointRef": {
+                  "name": "portal-admin-page-endpoint",
+                  "namespace": "krateo-system"
+                }
+              }
+            ]
+          }
+        }
+      }
+  - name: createButton
+    continueOnError: true
+    errorKey: createButtonError
+    dependsOn: 
+      name: listResourcesToCreateandDelete
+      iterator: .listResourcesToCreateandDelete.buttons.buttonsToCreate
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/" + (.namespace ) + "/buttons/" }
+    verb: POST
+    headers:
+      - "Content-Type: application/json"
+    payload: |
+      ${
+        {
+          "kind": "Button",
+          "apiVersion": "widgets.templates.krateo.io/v1beta1",
+          "metadata": {
+            "name": .name,
+            "namespace": .namespace,
+            "labels": {
+              "krateo.io/managed-by": "{{ .Values.global.compositionName }}-button-for-pods"
+            }
+          },
+          "spec": {
+            "widgetData": {
+              "label": "Logs",
+              "icon": "fa-solid fa-list",
+              "size": "middle",
+              "type": "primary",
+              "clickActionId": "open",
+              "actions": {
+                "openModal": [
+                  {
+                    "id": "open",
+                    "resourceRefId": "paragraph",
+                    "type": "openModal",
+                    "title": "Logs for: " + .name,
+                    "size": "large"
+                  }
+                ]
+              }
+            },
+            "resourcesRefs": {
+              "items": [
+                {
+                  "id": "paragraph",
+                  "apiVersion": "widgets.templates.krateo.io/v1beta1",
+                  "resource": "markdowns",
+                  "name": .name,
+                  "namespace": .namespace,
+                  "verb": "GET"
+                }
+              ]
+            }
+          }
+        }
+      }
+  - name: createParagraphs
+    continueOnError: true
+    errorKey: createParagraphError
+    dependsOn: 
+      name: listResourcesToCreateandDelete
+      iterator: .listResourcesToCreateandDelete.paragraphs.paragraphsToCreate
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/" + (.namespace ) + "/markdowns/" }
+    verb: POST
+    headers:
+      - "Content-Type: application/json"
+    payload: |
+      ${
+        {
+          "kind": "Markdown",
+          "apiVersion": "widgets.templates.krateo.io/v1beta1",
+          "metadata": {
+            "name": .name,
+            "namespace": .namespace,
+            "labels": {
+              "krateo.io/managed-by": "{{ .Values.global.compositionName }}-paragraph-for-pods"
+            }
+          },
+          "spec": {
+            "widgetData": {
+              "markdown": "",
+              "allowCopy": true,
+              "allowDownload": true,
+              "downloadFileExtension": "txt"
+            },
+            "widgetDataTemplate": [
+              {
+                "forPath": "markdown",
+                "expression": "${ .text.logs // .error.message // \"Nessun log disponibile.\" }"
+              }
+            ],
+            "apiRef": {
+              "name": .name,
+              "namespace": .namespace
+            }
+          }
+        }
+      }

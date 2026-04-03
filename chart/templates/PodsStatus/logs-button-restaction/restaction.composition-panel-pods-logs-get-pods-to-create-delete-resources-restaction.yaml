@@ -1,0 +1,105 @@
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-get-pods-to-create-delete-resources-restaction
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getPods
+    path: ${ "/api/v1/namespaces/{{ .Values.global.compositionName }}/pods"}
+    continueOnError: true
+    filter: >-
+      (
+        [ .getPods.items[] ]
+        | map({name: .metadata.name, namespace: .metadata.namespace })
+      )
+  - name: getNamespaces
+    path: "/api/v1/namespaces"
+    filter: >-
+      (.getNamespaces.items? // []) | map(.metadata.name) | map(select(. != "kube-system")) | map(select(. != "krateo-system")) | map(select(. != "cert-manager")) | map(select(. != "cliente1")) | map(select(. != "cnrm-system")) | map(select(. != "cnrm-system")) | map(select(. != "gke-system")) | map(select(. != "security-dashboard-ns")) | map(select(. != "default")) | map(select(. != "kargo")) | map(select(. != "	gke-managed-cim")) | map(select(. != "gmp-system")) | map(select(. != "trivy-system")) | map(select(. != "gke-managed-cim")) | map(select(. != "configconnector-operator-system")) | map(select(. != "sonarqube"))
+    continueOnError: true
+  - name: getButtons
+    continueOnError: true
+    dependsOn: 
+      name: getNamespaces
+      iterator: .getNamespaces
+    errorKey: getButtonsError
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/" + (.) + "/buttons?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-button-for-pods" }
+    filter: "(.getButtons.items? // []) | map({name: .metadata.name, namespace: .metadata.namespace})"
+  - name: getParagraphs
+    continueOnError: true
+    dependsOn: 
+      name: getNamespaces
+      iterator: .getNamespaces
+    errorKey: getParagraphsError
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/" + (.) + "/markdowns?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-paragraph-for-pods" }
+    filter: "(.getParagraphs.items? // []) | map({name: .metadata.name, namespace: .metadata.namespace})"
+  - name: getRestaction
+    continueOnError: true
+    dependsOn: 
+      name: getNamespaces
+      iterator: .getNamespaces
+    errorKey: getRestactionError
+    path: ${ "/apis/templates.krateo.io/v1/namespaces/" + (.) + "/restactions?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-restaction-for-pods" }
+    filter: "(.getRestaction.items? // []) | map({name: .metadata.name, namespace: .metadata.namespace})"
+  filter: >
+    (.getButtons // []) as $buttons
+    | (.getPods // []) as $pods
+    | (.getParagraphs // []) as $paragraphs
+    | (.getRestaction // []) as $restactions
+    | {
+        buttons: {
+          buttonsToCreate: (
+            $pods
+            | map(select(
+                (.name, .namespace) as $podspair
+                | all($buttons[]; (.name, .namespace) != $podspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          buttonsToDelete: (
+            $buttons
+            | map(select(
+                (.name, .namespace) as $buttonspair
+                | all($pods[]; (.name, .namespace) != $buttonspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        },
+        paragraphs: {
+          paragraphsToCreate: (
+            $pods
+            | map(select(
+                (.name, .namespace) as $podspair
+                | all($paragraphs[]; (.name, .namespace) != $podspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          paragraphsToDelete: (
+            $paragraphs
+            | map(select(
+                (.name, .namespace) as $paragraphspair
+                | all($pods[]; (.name, .namespace) != $paragraphspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        },
+        restactions: {
+          restactionsToCreate: (
+            $pods
+            | map(select(
+                (.name, .namespace) as $podspair
+                | all($restactions[]; (.name, .namespace) != $podspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          restactionsToDelete: (
+            $restactions
+            | map(select(
+                (.name, .namespace) as $restactionspair
+                | all($pods[]; (.name, .namespace) != $restactionspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        }
+      }

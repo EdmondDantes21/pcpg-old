@@ -1,0 +1,375 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Column
+metadata:
+  name: {{.Values.global.compositionName}}-argo-checks-column
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    allowedResources:
+      - rows
+      - tables
+      - filters
+    items:
+      - resourceRefId: argo-checks-row
+      - resourceRefId: info-row
+      - resourceRefId: argo-table
+  resourcesRefs:
+    items:
+    - id: argo-checks-row
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-argo-checks-row
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: rows
+      verb: GET
+    - id: argo-table
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-argo-table
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: tables
+      verb: GET
+    - id: info-row
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-info-row
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: rows
+      verb: GET
+
+---
+
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Row
+metadata:
+  name: {{.Values.global.compositionName}}-argo-checks-row
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    allowedResources:
+      - panels
+    items:
+      - resourceRefId: health-check-panel
+        size: 6
+      - resourceRefId: sync-check-panel
+        size: 6
+      - resourceRefId: last-sync-panel
+        size: 12
+  resourcesRefs:
+    items:
+    - id: health-check-panel
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-health-check-panel
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: panels
+      verb: GET
+    - id: sync-check-panel
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-sync-check-panel
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: panels
+      verb: GET
+    - id: last-sync-panel
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-last-sync-panel
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: panels
+      verb: GET
+
+---
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Table
+metadata:
+  name: {{.Values.global.compositionName}}-argo-table
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{.Values.global.compositionName}}-argoapp-to-table-action
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    prefix: argoaction
+    allowedResources: []
+    columns:
+    - title: Name
+      valueKey: name
+    - title: Kind
+      valueKey: kind
+    - title: Sync Status
+      valueKey: syncStatus
+    - title: Health Status
+      valueKey: healthStatus
+    data: []
+    pageSize: 8
+  widgetDataTemplate:
+  - forPath: data
+    expression: ${ .list }
+    
+---
+
+kind: Panel
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName}}-health-check-panel
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{.Values.global.compositionName}}-argoapp-to-table-action
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    actions: {}
+    items:
+    - resourceRefId: app-health-paragraph
+    title: "Loading..." 
+    icon: 
+      name: "fa-solid fa-heartbeat"
+      color: "grey"      
+  widgetDataTemplate:
+    - forPath: title
+      expression: ${ .summary.health }
+    - forPath: icon.color
+      expression: ${ .summary.healthIcon }
+  resourcesRefs:
+    items:
+    - id: app-health-paragraph
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-app-health-paragraph
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: paragraphs
+      verb: GET
+
+---
+
+kind: Paragraph
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName}}-app-health-paragraph
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    text: "Application health status."
+
+---
+
+kind: Panel
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName}}-sync-check-panel
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{.Values.global.compositionName}}-argoapp-to-table-action
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    clickActionId: trigger-argo-sync
+    actions:
+      rest:
+        - id: trigger-argo-sync
+          resourceRefId: trigger-argo-sync
+          type: rest
+          successMessage: "Sync avviata con successo! 🚀"
+          errorMessage: "Errore nell'avvio della sync."
+          headers:
+          - "Content-Type: application/merge-patch+json"
+          payload: 
+            metadata:
+              annotations:
+                krateo.io/last-trigger: "manual-click-${ date.now() }"
+    items:
+    - resourceRefId: synch-check-paragraph
+    title: "Loading..."
+    icon: 
+      name: "fa-solid fa-sync-alt"
+      color: "grey"
+  widgetDataTemplate:
+    - forPath: title
+      expression: ${ .summary.sync }
+    - forPath: icon.color
+      expression: ${ .summary.syncIcon }
+  resourcesRefs:
+    items: 
+    - id: trigger-argo-sync
+      apiVersion: templates.krateo.io/v1
+      name: {{.Values.global.compositionName}}-trigger-argo-sync
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: restactions
+      verb: GET
+    - id: synch-check-paragraph
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName}}-synch-check-paragraph
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: paragraphs
+      verb: GET
+
+---
+kind: Paragraph
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName}}-synch-check-paragraph
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    text: "Click to trigger a sync!"
+
+---
+
+kind: Panel
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName }}-last-sync-panel
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{.Values.global.compositionName }}-argoapp-to-table-action
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    actions: {}
+    items:
+    - resourceRefId: last-sync-paragraph
+    title: "Last sync: Fetching..."
+    icon: 
+      name: "fa-solid fa-clock"
+      color: "blue"
+  widgetDataTemplate:
+    - forPath: title
+      expression: ${ .summary.lastSyncStr }
+  resourcesRefs:
+    items:
+    - id: last-sync-paragraph
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName }}-last-sync-paragraph
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: paragraphs
+      verb: GET
+
+---
+
+kind: Paragraph
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName }}-last-sync-paragraph
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    text: "Auto sync disabled."
+
+---
+
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Filters
+metadata:
+  name: {{.Values.global.compositionName }}-argoapp-filters
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    fields:
+    - label: Kind
+      options:
+      - Deployment
+      - Service
+      - Ingress
+      - ConfigMap
+      - Secret
+      - Pod
+      - PersistentVolumeClaim
+      - StatefulSet
+      - ServiceAccount
+      - NetworkPolicy
+      - PodDisruptionBudget
+      name:
+        - kind
+      type: string
+    - label: Name
+      name:
+        - name
+      type: string
+    - label: Health Status
+      name:
+      - healthStatus
+      options:
+      - Healthy
+      - Degraded
+      type: string
+    - label: Sync Status
+      name:
+      - syncStatus
+      options:
+      - Synced
+      - OutOfSync
+      type: string
+    prefix: argoaction
+
+---
+
+
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Markdown
+metadata:
+  name: {{.Values.global.compositionName }}-argo-details-markdown
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{.Values.global.compositionName }}-argo-details-action
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    markdown: "🔄 Caricamento sorgenti..."
+  widgetDataTemplate:
+    - forPath: markdown
+      expression: ${ .content }
+
+---
+kind: Panel
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{.Values.global.compositionName }}-info-panel
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    actions: {}
+    title: "Source Info"
+    icon: 
+      name: "fa-solid fa-code-branch"
+      color: "blue"
+    items:
+      - resourceRefId: argo-details-markdown
+  resourcesRefs:
+    items:
+      - id: argo-details-markdown
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{.Values.global.compositionName }}-argo-details-markdown
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: markdowns
+        verb: GET
+
+---
+
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Row
+metadata:
+  name: {{.Values.global.compositionName }}-info-row
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    allowedResources:
+      - panels
+    items:
+      - resourceRefId: argo-details-markdown
+        size: 12
+      - resourceRefId: argoapp-filters
+        size: 12
+  resourcesRefs:
+    items:
+    - id: info-panel
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName }}-info-panel
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: panels
+      verb: GET
+    - id: argo-details-markdown
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName }}-argo-details-markdown
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: markdowns
+      verb: GET
+    - id: argoapp-filters
+      apiVersion: widgets.templates.krateo.io/v1beta1
+      name: {{.Values.global.compositionName }}-argoapp-filters
+      namespace: {{ .Values.global.compositionNamespace }}
+      resource: filters
+      verb: GET

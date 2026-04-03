@@ -1,0 +1,51 @@
+kind: Button
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-panel-button-favorite
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    icon: ""
+    type: default
+    shape: circle
+    clickActionId: favorite
+    actions:
+      rest:
+        - id: favorite
+          resourceRefId: favorite
+          type: rest
+          onSuccessNavigateTo: /compositions
+          payload: 
+            metadata:
+              label:
+                favorite: ""
+          headers:
+          - "Content-Type: application/merge-patch+json"
+  resourcesRefs:
+    items:
+      - id: favorite
+        apiVersion:  widgets.templates.krateo.io/v1beta1
+        resource: panels
+        name: {{ .Values.global.compositionName }}-composition-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: PATCH
+  widgetDataTemplate:
+    - forPath: icon
+      expression: >
+        ${
+          if .metadata.labels.favorite == "true"
+          then "fa-star"
+          else "fa-regular fa-star"
+          end
+        }
+    - forPath: "actions.rest[0].payload.metadata.labels"
+      expression: >
+        ${
+          if .metadata.labels.favorite == "true"
+          then {"favorite": "false"}
+          else {"favorite": "true"}
+          end
+        }
+  apiRef:
+    name: {{ .Values.global.compositionName }}-favorite-composition
+    namespace: {{ .Values.global.compositionNamespace }}

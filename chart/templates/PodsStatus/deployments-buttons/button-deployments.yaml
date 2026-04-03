@@ -1,0 +1,125 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Row
+metadata:
+  name: {{ .Values.global.compositionName }}-button-row
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    allowedResources:
+      - buttons
+    items:
+      - resourceRefId: button-scale-up
+        size: 2    
+      - resourceRefId: button-scale-down
+        size: 2
+      - resourceRefId: button-restart
+        size: 2
+  resourcesRefs:
+    items:
+      - id: button-restart
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        resource: buttons
+        name: {{ .Values.global.compositionName }}-composition-panel-restart-button
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: GET
+      - id: button-scale-down
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        resource: buttons
+        name: {{ .Values.global.compositionName }}-composition-panel-scale-down-button
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: GET
+      - id: button-scale-up
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        resource: buttons
+        name: {{ .Values.global.compositionName }}-composition-panel-scale-up-button
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: GET
+
+---
+
+kind: Button
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-panel-scale-up-button
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    label: Start
+    icon: fa-solid fa-play
+    type: default
+    size: small
+    clickActionId: scale-up
+    actions:
+      rest:
+        - id: scale-up
+          resourceRefId: scale-up
+          type: rest
+          headers:
+            - 'Content-Type: application/json'
+  resourcesRefs:
+    items:
+      - id: scale-up
+        apiVersion: templates.krateo.io/v1
+        resource: restactions
+        name: {{ .Values.global.compositionName }}-scale-up
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: GET
+---
+
+kind: Button
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-panel-scale-down-button
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    label: Stop
+    icon: fa-solid fa-stop
+    type: default
+    size: small
+    clickActionId: scale-down
+    actions:
+      rest:
+        - id: scale-down
+          resourceRefId: -scale-down
+          type: rest
+          headers:
+            - 'Content-Type: application/json'
+  resourcesRefs:
+    items:
+      - id: scale-down
+        apiVersion: templates.krateo.io/v1
+        resource: restactions
+        name: {{ .Values.global.compositionName }}-scale-down
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: GET
+
+---
+
+kind: Button
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-panel-restart-button
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    label: Restart
+    icon: fa-rotate-right
+    type: default
+    size: small
+    clickActionId: restart
+    actions:
+      rest:
+        - id: restart
+          resourceRefId: restart
+          type: rest
+          headers:
+            - 'Content-Type: application/json'
+  resourcesRefs:
+    items:
+      - id: restart
+        apiVersion: templates.krateo.io/v1
+        resource: restactions
+        name: {{ .Values.global.compositionName }}-restart
+        namespace: {{ .Values.global.compositionNamespace }}
+        verb: GET

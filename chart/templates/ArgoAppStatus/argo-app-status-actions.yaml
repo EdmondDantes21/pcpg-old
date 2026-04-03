@@ -1,0 +1,99 @@
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{.Values.global.compositionName }}-trigger-argo-sync
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: patchArgoApp
+    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Values.global.compositionName }}
+    verb: PATCH
+    headers:
+      - "Content-Type: application/merge-patch+json"
+    payload: |
+      {
+        "operation": {
+          "initiatedBy": {
+            "username": "krateo-portal"
+          },
+          "sync": {
+            "revision": "main",
+            "syncStrategy": {
+              "hook": {}
+            }
+          }
+        }
+      }
+
+---
+
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{.Values.global.compositionName }}-argoapp-to-table-action
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getArgoApp
+    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Values.global.compositionName }}
+    verb: GET
+    continueOnError: false
+  
+  filter: |
+    .getArgoApp | .status as $status |
+    {
+      "summary": {
+        "health": ($status.health.status // "Unknown"),
+        "healthIcon": (if $status.health.status == "Healthy" then "green" elif $status.health.status == null then "grey" else "red" end),
+        "sync": ($status.sync.status // "Unknown"),
+        "syncIcon": (if $status.sync.status == "Synced" then "green" elif $status.sync.status == "Unknown" then "grey" else "orange" end),
+        "lastSyncStr": ("Last sync: " + ($status.sync.revision // "N/A") + " (" + ($status.operationState.finishedAt // "N/A") + ")")
+      },
+      "list": (
+        ($status.resources // []) | map(
+          . as $res |
+          [
+            { "valueKey": "name", "kind": "jsonSchemaType", "type": "string", "stringValue": ($res.name // "N/A") },
+            { "valueKey": "kind", "kind": "jsonSchemaType", "type": "string", "stringValue": ($res.kind // "N/A") },
+            { 
+              "valueKey": "syncStatus", 
+              "kind": "jsonSchemaType", "type": "string", 
+              "stringValue": (if $res.status == "Synced" then "Synced 🟢" else "OutOfSync 🟡" end) 
+            },
+            { 
+              "valueKey": "healthStatus", 
+              "kind": "jsonSchemaType", "type": "string", 
+              "stringValue": (if $res.health?.status == "Healthy" then "Healthy 💚" else "Unknown/Degraded 🔴" end) 
+            }
+          ]
+        )
+      )
+    }
+
+---
+
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{.Values.global.compositionName }}-argo-details-action
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getArgoApp
+    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Values.global.compositionName }}
+    verb: GET
+    continueOnError: false
+  filter: |
+    .getArgoApp |
+    (.spec.sources[0] // .spec.source) as $s | 
+    (.status.sync.revision // "N/A") as $rev |
+    (if $s.chart then "Helm Chart ☸️" else "Git Repo 🐙" end) as $type |
+    ($s.chart // "Source") as $name |
+    ($s.targetRevision // "HEAD") as $target |
+
+    {
+      "content": "# Continuous Deployment (Application Status)\n\n## Source\n\n**\($type)** \(if $name != "Source" then "(\($name))" else "" end)\n- **URL:** [\($s.repoURL)](\($s.repoURL))\n- **Target:** **\($target)**\n- **Revision:** **\($rev)**"
+    }
+    
+---
+

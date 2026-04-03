@@ -1,0 +1,14 @@
+kind: FlowChart
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-application-status-panel-flowchart
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    data: []
+  widgetDataTemplate:
+    - forPath: data
+      expression: ${ .data }
+  apiRef:
+    name: {{ .Values.global.compositionName }}-application-status
+    namespace: {{ .Values.global.compositionNamespace }}

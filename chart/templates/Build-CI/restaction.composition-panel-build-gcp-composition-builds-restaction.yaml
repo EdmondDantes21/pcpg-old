@@ -1,0 +1,93 @@
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-gcp-composition-builds-restaction
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  # - name: createall # create all resources
+  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+  #   verb: GET
+  #   endpointRef:
+  #     name: snowplow-endpoint
+  #     namespace: {{ .Values.global.krateoNamespace }}
+  #   headers:
+  #   - 'Accept: application/json'
+  #   continueOnError: true
+  #   exportJwt: true
+  # - name: deleteall # delete all resources not in use
+  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+  #   verb: GET
+  #   endpointRef:
+  #     name: snowplow-endpoint
+  #     namespace: {{ .Values.global.krateoNamespace }}
+  #   headers:
+  #   - 'Accept: application/json'
+  #   continueOnError: true
+  #   exportJwt: true   
+  - name: getBuildsId
+    verb: GET
+    continueOnError: true
+    path: "/v1/projects/{{ .Values.global.projectID }}/locations/{{ .Values.global.projectLocation }}/builds"
+    endpointRef:
+      name: gcp-endpoint-cloudbuild
+      namespace: {{ .Values.global.krateoNamespace }}
+    filter: >-
+      (
+        ( .getBuilds.builds // [])
+        | map(select(.substitutions.TRIGGER_NAME == "{{ .Values.global.compositionName }}-trigger"))
+        | map({name: .id + "-buildid-button", namespace: "{{ .Values.global.buildPanelNamespace }}"})
+      )
+      | .[:3]
+  - name: getBuilds
+    verb: GET
+    continueOnError: true
+    path: "/v1/projects/{{ .Values.global.projectID }}/locations/{{ .Values.global.projectLocation }}/builds"
+    endpointRef:
+      name: gcp-endpoint-cloudbuild
+      namespace: {{ .Values.global.krateoNamespace }}
+  filter: >-
+    {
+      buildsId: (
+        ( .getBuildsId // [])
+      ),
+      list: (
+        (
+          ( .getBuilds.builds // [])
+          | map(select(.substitutions.TRIGGER_NAME == "{{ .Values.global.compositionName }}-trigger"))
+          | map(
+              [
+                {
+                  "valueKey": "triggername",
+                  "kind": "jsonSchemaType",
+                  "type": "string",
+                  "stringValue": .substitutions.TRIGGER_NAME
+                },
+                {
+                  "valueKey": "id",
+                  "kind": "jsonSchemaType",
+                  "type": "string",
+                  "stringValue": .id
+                },
+                {
+                  "valueKey": "status",
+                  "kind": "jsonSchemaType",
+                  "type": "string",
+                  "stringValue": if .status == "SUCCESS" then "✅" elif .status == "WORKING" then "⏳" elif .status == "FAILURE" then "❌" else .status end
+                },
+                {
+                  "valueKey": "lanciataIl",
+                  "kind": "jsonSchemaType",
+                  "type": "string",
+                  "stringValue": .startTime
+                },
+                {
+                  valueKey: "logs_button",
+                  kind: "widget",
+                  resourceRefId: .id + "-buildid-button"
+                }
+              ]
+            )
+        )
+      | .[:3] ),
+    }

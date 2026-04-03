@@ -1,0 +1,18 @@
+kind: Panel
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-documentation-panel
+  namespace: {{ .Values.global.compositionNamespace }}
+spec: 
+  widgetData:
+    actions: {}
+    items:
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-documentation-panel-markdown
+  resourcesRefs:
+    items:
+      - id: {{ .Values.global.compositionName }}-composition-documentation-panel-markdown
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-documentation-panel-markdown
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: markdowns
+        verb: GET

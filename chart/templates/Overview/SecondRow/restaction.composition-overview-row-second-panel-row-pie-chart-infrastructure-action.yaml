@@ -1,0 +1,21 @@
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure-action
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: composition_status
+    path: "/call?apiVersion=templates.krateo.io%2Fv1&resource=restactions&name={{ .Values.global.compositionName }}-composition-status&namespace={{ .Values.global.compositionNamespace }}"
+    continueOnError: true
+    endpointRef:
+      name: snowplow-endpoint
+      namespace: krateo-system
+    exportJwt: true
+    headers:
+    - 'Accept: application/json'
+    filter: >-
+      .composition_status.status.nodes | map(select(.name != null and .name != "")) | {
+      ready: map(select(.statusIcon.isReady == "true")) | length,
+      notReady: map(select(.statusIcon.isReady == "false")) | length
+      }

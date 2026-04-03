@@ -1,0 +1,25 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Panel
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-pods-logs-panel
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    actions: {}
+    items:
+      - resourceRefId: {{ .Values.global.compositionName }}-button-row
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-panel-pods-logs-table
+  resourcesRefs:
+    items:
+      - id: {{ .Values.global.compositionName }}-button-row
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-button-row
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: rows
+        verb: GET
+      - id: {{ .Values.global.compositionName }}-composition-panel-pods-logs-table
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-panel-pods-logs-table
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: tables
+        verb: GET

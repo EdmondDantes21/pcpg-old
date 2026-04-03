@@ -1,0 +1,19 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Panel
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    actions: {}
+    title: Application Status
+    items:
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+  resourcesRefs:
+    items:
+      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: piecharts
+        verb: GET

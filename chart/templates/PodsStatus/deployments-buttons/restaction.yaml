@@ -1,0 +1,90 @@
+
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-scale-down
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getDeployment
+    verb: GET
+    path: "/apis/apps/v1/namespaces/{{ .Values.global.compositionName }}/deployments"
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    filter: "(.getDeployment.items? // []) |  map(.metadata.name)"
+  - name: scaledown
+    verb: PATCH
+    continueOnError: true
+    dependsOn: 
+      name: getDeployment
+      iterator: .getDeployment
+    path: ${ "/apis/apps/v1/namespaces/{{ .Values.global.compositionName }}/deployments/" + (.) + "/scale" }
+    headers:
+    - "Content-Type: application/merge-patch+json"
+    payload: |
+        {
+          "spec":
+            {
+              "replicas": 0
+            }
+        }
+
+---
+
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-scale-up
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getDeployment
+    verb: GET
+    path: "/apis/apps/v1/namespaces/{{ .Values.global.compositionName }}/deployments"
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    filter: "(.getDeployment.items? // []) |  map(.metadata.name)"
+  - name: scaleup
+    verb: PATCH
+    continueOnError: true
+    dependsOn: 
+      name: getDeployment
+      iterator: .getDeployment
+    path: ${ "/apis/apps/v1/namespaces/{{ .Values.global.compositionName }}/deployments/" + (.) + "/scale" }
+    headers:
+    - "Content-Type: application/merge-patch+json"
+    payload: |
+        {
+          "spec":
+            {
+              "replicas": 1
+            }
+        }
+---
+
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-scale-restart
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getDeployment
+    verb: GET
+    path: "/apis/apps/v1/namespaces/{{ .Values.global.compositionName }}/deployments"
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    filter: "(.getDeployment.items? // []) |  map(.metadata.name)"
+  - name: restart
+    verb: PATCH
+    continueOnError: true
+    dependsOn: 
+      name: getDeployment
+      iterator: .getDeployment
+    path: ${ "/apis/apps/v1/namespaces/{{ .Values.global.compositionName }}/deployments/" + (.) }
+    headers:
+    - "Content-Type: application/merge-patch+json"
+    payload: ${ "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"kubectl.kubernetes.io/restartedAt\":\"" + (now | todate) + "\"}}}}}" }

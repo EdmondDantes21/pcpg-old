@@ -1,0 +1,28 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Row
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    allowedResources:
+      - panels
+    items:
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
+        size: 12
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+        size: 12
+  resourcesRefs:
+    items:
+      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET

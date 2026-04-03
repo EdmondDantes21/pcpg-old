@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.compositionName }}-documentation-readme
+  namespace: {{ .Values.global.compositionName }}
+data:
+  README.md: "# Documentation \nComposition name: {{ .Values.global.compositionName }}" 

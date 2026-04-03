@@ -1,0 +1,93 @@
+kind: TabList
+apiVersion: widgets.templates.krateo.io/v1beta1
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-tablist
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  widgetData:
+    allowedResources:
+      - panels
+      - columns
+    items:
+      - label: Overview
+        resourceRefId: composition-overview-panel
+      - label: Composition Status
+        resourceRefId: composition-status-panel
+      - label: Application Status
+        resourceRefId: argo-checks-column
+      - label: Graphic Application Status (CD)
+        resourceRefId: application-status-panel
+      - label: Pods Status
+        resourceRefId: composition-pods-logs-panel
+      - label: Build CI
+        resourceRefId: composition-builds-panel
+      - label: Vulnerability
+        resourceRefId: composition-cve-column
+      - label: Events
+        resourceRefId: composition-events-panel
+      - label: Documentation
+        resourceRefId: composition-documentation-panel
+      - label: Values
+        resourceRefId: composition-values-panel
+  resourcesRefs:
+    items:
+      - id: composition-overview-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-overview-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-events-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-events-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-status-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-status-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-values-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-values-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: application-status-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-application-status-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-documentation-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-documentation-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-pods-logs-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-pods-logs-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-builds-panel
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-builds-panel
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: panels
+        verb: GET
+      - id: composition-cve-column
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-composition-cve-column
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: columns
+        verb: GET
+      - id: argo-checks-column
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        name: {{ .Values.global.compositionName }}-argo-checks-column
+        namespace: {{ .Values.global.compositionNamespace }}
+        resource: columns
+        verb: GET

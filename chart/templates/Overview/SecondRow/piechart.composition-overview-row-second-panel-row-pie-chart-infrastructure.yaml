@@ -1,0 +1,38 @@
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: PieChart
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure-action
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    title: "10"
+    description: "Infrastructure"
+    series:
+      total: 0
+      data: []
+  widgetDataTemplate:
+    - forPath: series
+      expression: >
+        ${
+          .composition_status |
+          {
+            "total": (.ready + .notReady),
+            "data": [
+              {
+                "label": "Ready",
+                "value": .ready,
+                "color": "green"
+              },
+              {
+                "label": "Not Ready",
+                "value": .notReady,
+                "color": "red"
+              }
+            ]
+          }
+        }
+    - expression: ${ (.composition_status.ready + .composition_status.notReady) | tostring }
+      forPath: title

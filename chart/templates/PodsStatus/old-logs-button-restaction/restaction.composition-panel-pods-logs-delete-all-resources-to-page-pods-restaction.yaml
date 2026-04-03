@@ -1,0 +1,62 @@
+
+# apiVersion: templates.krateo.io/v1
+# kind: RESTAction
+# metadata:
+#   name: {{ .Values.global.compositionName }}-delete-all-resources-to-page-old-logs-restaction
+#   namespace: {{ .Values.global.compositionNamespace }}
+# spec:
+#   api:
+#   - name: listResourcesToCreateandDelete
+#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-get-pods-to-create-delete-resources-old-logs-restaction&namespace={{ .Values.global.compositionNamespace }}"
+#     verb: GET
+#     endpointRef:
+#       name: snowplow-endpoint
+#       namespace: {{ .Values.global.krateoNamespace }}
+#     headers:
+#     - 'Accept: application/json'
+#     continueOnError: true
+#     errorKey: listResourcesToCreateandDeleteError
+#     exportJwt: true
+#     filter: ".listResourcesToCreateandDelete.status? // {}"
+#   - name: deleteLoopButtons
+#     verb: DELETE
+#     dependsOn:
+#       name: listResourcesToCreateandDelete
+#       iterator: .listResourcesToCreateandDelete.buttons.buttonsToDelete
+#     path: ${ "/call?apiVersion=widgets.templates.krateo.io/v1beta1&resource=buttons&name=" + (.name) + "&namespace=" + (.namespace) }
+#     endpointRef:
+#       name: snowplow-endpoint
+#       namespace: krateo-system
+#     exportJwt: true
+#     headers:
+#     - 'Accept: application/json'
+#     continueOnError: true
+#     errorKey: deleteErrors
+#   - name: deleteLoopRestactions
+#     verb: DELETE
+#     dependsOn:
+#       name: listResourcesToCreateandDelete
+#       iterator: .listResourcesToCreateandDelete.restactions.restactionsToDelete
+#     path: ${ "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name=" + (.name) + "&namespace=" + (.namespace) }
+#     endpointRef:
+#       name: snowplow-endpoint
+#       namespace: krateo-system
+#     exportJwt: true
+#     headers:
+#     - 'Accept: application/json'
+#     continueOnError: true
+#     errorKey: deleteErrors
+#   - name: deleteLoopParagraphs
+#     verb: DELETE
+#     dependsOn:
+#       name: listResourcesToCreateandDelete
+#       iterator: .listResourcesToCreateandDelete.paragraphs.paragraphsToDelete
+#     path: ${ "/call?apiVersion=widgets.templates.krateo.io/v1beta1&resource=markdowns&name=" + (.name) + "&namespace=" + (.namespace) }
+#     endpointRef:
+#       name: snowplow-endpoint
+#       namespace: krateo-system
+#     exportJwt: true
+#     headers:
+#     - 'Accept: application/json'
+#     continueOnError: true
+#     errorKey: deleteErrors

@@ -1,0 +1,10 @@
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-get-documentation
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getReadme
+    path: "/api/v1/namespaces/{{ .Values.global.compositionName }}/configmaps/{{ .Values.global.compositionName }}-documentation-readme"
+    filter: .getReadme.data["README.md"]
