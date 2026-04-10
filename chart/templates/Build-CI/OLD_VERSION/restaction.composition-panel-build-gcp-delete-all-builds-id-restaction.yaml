@@ -1,13 +1,13 @@
 # apiVersion: templates.krateo.io/v1
 # kind: RESTAction
 # metadata:
-#   name: {{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction
+#   name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction
 #   namespace: {{ .Values.global.compositionNamespace }}
 # spec:
 #   api:
 #   - name: getButtonsList # eliminazione bottoni non necessari
 #     verb: GET
-#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
 #     exportJwt: true
 #     headers:
 #     - 'Accept: application/json'
@@ -31,7 +31,7 @@
 #     errorKey: deleteErrors
 #   - name: getRestactionsList # eliminazione restaction non necessarie
 #     verb: GET
-#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
 #     exportJwt: true
 #     headers:
 #     - 'Accept: application/json'
@@ -55,7 +55,7 @@
 #     errorKey: deleteErrors
 #   - name: getYamlviewersList # eliminazione yamlviewer non necessari
 #     verb: GET
-#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+#     path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
 #     exportJwt: true
 #     headers:
 #     - 'Accept: application/json'

@@ -3,7 +3,7 @@
 # apiVersion: templates.krateo.io/v1
 # kind: RESTAction
 # metadata:
-#   name: {{ .Values.global.compositionName }}-gcp-get-builds-id-button-restaction
+#   name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-get-builds-id-button-restaction
 #   namespace: {{ .Values.global.compositionNamespace }}
 # spec:
 #   api:

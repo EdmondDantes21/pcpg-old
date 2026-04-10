@@ -1,7 +1,7 @@
 kind: EventList
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-events-panel-eventlist
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-events-panel-eventlist
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -43,7 +43,7 @@ spec:
             )
         }
   apiRef:
-    name: {{ .Values.global.compositionName }}-composition-events
+    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-events
     namespace: {{ .Values.global.compositionNamespace }}
 
 ---
@@ -51,7 +51,7 @@ spec:
 # kind: EventList
 # apiVersion: widgets.templates.krateo.io/v1beta1
 # metadata:
-#   name: {{ .Values.global.compositionName }}-composition-events-panel-eventlist
+#   name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-events-panel-eventlist
 #   namespace: {{ .Values.global.compositionNamespace }}
 # spec:
 #   widgetData:
@@ -62,5 +62,5 @@ spec:
 #     - forPath: events
 #       expression: ${ .list }
 #   apiRef:
-#     name: {{ .Values.global.compositionName }}-composition-events
+#     name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-events
 #     namespace: {{ .Values.global.compositionNamespace }}

@@ -1,12 +1,12 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-favorite-composition
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-favorite-composition
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: getFavoriteComposition
-    path: "/apis/widgets.templates.krateo.io/v1beta1/namespaces/{{ .Values.global.compositionNamespace }}/panels/{{ .Values.global.compositionName }}-composition-panel"
+    path: "/apis/widgets.templates.krateo.io/v1beta1/namespaces/{{ .Values.global.compositionNamespace }}/panels/{{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel"
     verb: GET
     headers:
     - 'Accept: application/json'

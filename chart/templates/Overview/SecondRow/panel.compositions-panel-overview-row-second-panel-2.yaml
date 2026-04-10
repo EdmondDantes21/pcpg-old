@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Panel
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -16,7 +16,7 @@ spec:
     items:
       - id: composition-overview-row-second-panel-row-pie-chart-application
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
         namespace: {{ .Values.global.compositionNamespace }}
         resource: piecharts
         verb: GET

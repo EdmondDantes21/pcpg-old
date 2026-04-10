@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Row
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-overview-row-second
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -18,19 +18,19 @@ spec:
     items:
       - id: composition-overview-row-second-panel-1
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
         namespace: {{ .Values.global.compositionNamespace }}
         resource: panels
         verb: GET
       - id: composition-overview-row-second-panel-2
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
         namespace: {{ .Values.global.compositionNamespace }}
         resource: panels
         verb: GET
       - id: composition-overview-row-second-panel-3
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-overview-row-third-cve-column-panel
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-third-cve-column-panel
         namespace: {{ .Values.global.compositionNamespace }}
         resource: panels
         verb: GET

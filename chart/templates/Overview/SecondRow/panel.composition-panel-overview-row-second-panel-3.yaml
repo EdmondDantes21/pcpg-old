@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Panel
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-overview-row-third-cve-column-panel
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-third-cve-column-panel
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -16,7 +16,7 @@ spec:
     items:
       - id: composition-overview-row-third-cve-column-piechart
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-overview-row-third-cve-column-piechart
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-third-cve-column-piechart
         namespace: {{ .Values.global.compositionNamespace }}
         resource: piecharts
         verb: GET

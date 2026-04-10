@@ -1,7 +1,7 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-application-status
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-application-status
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:

@@ -2,7 +2,7 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-scale-down
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-scale-down
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
@@ -35,7 +35,7 @@ spec:
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-scale-up
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-scale-up
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
@@ -67,7 +67,7 @@ spec:
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-restart
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-restart
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:

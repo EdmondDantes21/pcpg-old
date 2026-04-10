@@ -4,4 +4,4 @@ description: A Blueprint for Krateo Composable Portal Composition page with a ge
 icon: https://github.com/krateoplatformops/krateo/blob/main/docs/media/logo.svg
 name: portal-composition-page-generic
 type: application
-version: 10.0.0
+version: 20.0.0

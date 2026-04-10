@@ -1,7 +1,7 @@
 kind: Panel
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-documentation-panel
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-documentation-panel
   namespace: {{ .Values.global.compositionNamespace }}
 spec: 
   widgetData:
@@ -12,7 +12,7 @@ spec:
     items:
       - id: composition-documentation-panel-markdown
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-documentation-panel-markdown
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-documentation-panel-markdown
         namespace: {{ .Values.global.compositionNamespace }}
         resource: markdowns
         verb: GET

@@ -1,12 +1,12 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-gcp-composition-builds-restaction
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-composition-builds-restaction
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: createall # create all resources
-    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
     verb: GET
     endpointRef:
       name: snowplow-endpoint
@@ -16,7 +16,7 @@ spec:
     continueOnError: true
     exportJwt: true
   - name: deleteall # delete all resources not in use
-    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
     verb: GET
     endpointRef:
       name: snowplow-endpoint

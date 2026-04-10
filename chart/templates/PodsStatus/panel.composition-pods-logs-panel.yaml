@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Panel
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-pods-logs-panel
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-pods-logs-panel
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -13,13 +13,13 @@ spec:
     items:
       - id: button-row
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-button-row
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-button-row
         namespace: {{ .Values.global.compositionNamespace }}
         resource: rows
         verb: GET
       - id: composition-panel-pods-logs-table
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionName }}-composition-panel-pods-logs-table
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-pods-logs-table
         namespace: {{ .Values.global.compositionNamespace }}
         resource: tables
         verb: GET

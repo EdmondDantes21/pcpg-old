@@ -3,7 +3,7 @@ kind: RESTAction
 metadata:
   annotations:
     krateo.io/verbose: "true"
-  name: {{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:

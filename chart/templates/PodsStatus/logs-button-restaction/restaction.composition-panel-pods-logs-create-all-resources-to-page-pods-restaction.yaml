@@ -4,12 +4,12 @@ kind: RESTAction
 metadata:
   annotations:
     krateo.io/verbose: "true"
-  name: {{ .Values.global.compositionName }}-create-all-resources-to-page-pods-restaction
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-create-all-resources-to-page-pods-restaction
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: listResourcesToCreateandDelete
-    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-get-pods-to-create-delete-resources-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-get-pods-to-create-delete-resources-restaction&namespace={{ .Values.global.compositionNamespace }}"
     verb: GET
     endpointRef:
       name: snowplow-endpoint

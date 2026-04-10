@@ -1,7 +1,7 @@
 kind: Button
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-panel-button-favorite
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-button-favorite
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -26,7 +26,7 @@ spec:
       - id: favorite
         apiVersion:  widgets.templates.krateo.io/v1beta1
         resource: panels
-        name: {{ .Values.global.compositionName }}-composition-panel
+        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel
         namespace: {{ .Values.global.compositionNamespace }}
         verb: PATCH
   widgetDataTemplate:
@@ -47,5 +47,5 @@ spec:
           end
         }
   apiRef:
-    name: {{ .Values.global.compositionName }}-favorite-composition
+    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-favorite-composition
     namespace: {{ .Values.global.compositionNamespace }}

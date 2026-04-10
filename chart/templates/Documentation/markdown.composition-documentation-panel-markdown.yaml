@@ -1,11 +1,11 @@
 kind: Markdown
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionName }}-composition-documentation-panel-markdown
+  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-documentation-panel-markdown
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   apiRef:
-    name: {{ .Values.global.compositionName }}-get-documentation
+    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-get-documentation
     namespace: {{ .Values.global.compositionNamespace }}
   widgetData:
     markdown: "Caricamento del file README in corso..."
