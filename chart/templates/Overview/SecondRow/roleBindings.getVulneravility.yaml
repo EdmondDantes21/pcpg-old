@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: platform-devs-{{ .Values.global.compositionNamespace }}-vulnerabilityreport-clusterrole
+ namespace: {{ .Values.global.compositionName }}
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: platform-devs-vulnerabilityreport-clusterrole
+subjects:
+- kind: Group
+  name: platform-devs-{{ .Values.global.compositionNamespace }}
+  apiGroup: rbac.authorization.k8s.io

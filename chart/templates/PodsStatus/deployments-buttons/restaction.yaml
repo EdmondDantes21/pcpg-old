@@ -67,7 +67,7 @@ spec:
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionName }}-scale-restart
+  name: {{ .Values.global.compositionName }}-restart
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:

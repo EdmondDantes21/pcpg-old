@@ -60,3 +60,17 @@ spec:
     - 'Accept: application/json'
     continueOnError: true
     errorKey: deleteErrors
+  - name: deleteLoopTabLists
+    verb: DELETE
+    dependsOn:
+      name: listResourcesToCreateandDelete
+      iterator: .listResourcesToCreateandDelete.tablists.tablistsToDelete
+    path: ${ "/call?apiVersion=widgets.templates.krateo.io/v1beta1&resource=tablists&name=" + (.name) + "&namespace=" + (.namespace) }
+    endpointRef:
+      name: snowplow-endpoint
+      namespace: krateo-system
+    exportJwt: true
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    errorKey: deleteErrors

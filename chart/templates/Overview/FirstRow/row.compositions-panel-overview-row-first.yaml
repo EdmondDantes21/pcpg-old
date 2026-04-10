@@ -8,10 +8,10 @@ spec:
     allowedResources:
       - panels
     items: 
-      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
+      - resourceRefId: composition-overview-row-first-panel-intro
   resourcesRefs:
     items: 
-      - id: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
+      - id: composition-overview-row-first-panel-intro
         apiVersion: widgets.templates.krateo.io/v1beta1
         name: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
         namespace: {{ .Values.global.compositionNamespace }}

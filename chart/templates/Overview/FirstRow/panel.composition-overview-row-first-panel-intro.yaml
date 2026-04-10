@@ -7,10 +7,10 @@ spec:
   widgetData:
     actions: {}
     items:
-      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro-markdown
+      - resourceRefId: composition-overview-row-first-panel-intro-markdown
   resourcesRefs:
     items:
-      - id: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro-markdown
+      - id: composition-overview-row-first-panel-intro-markdown
         apiVersion: widgets.templates.krateo.io/v1beta1
         name: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro-markdown
         namespace: {{ .Values.global.compositionNamespace }}

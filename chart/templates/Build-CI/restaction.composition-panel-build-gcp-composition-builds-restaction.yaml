@@ -5,26 +5,26 @@ metadata:
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
-  # - name: createall # create all resources
-  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
-  #   verb: GET
-  #   endpointRef:
-  #     name: snowplow-endpoint
-  #     namespace: {{ .Values.global.krateoNamespace }}
-  #   headers:
-  #   - 'Accept: application/json'
-  #   continueOnError: true
-  #   exportJwt: true
-  # - name: deleteall # delete all resources not in use
-  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
-  #   verb: GET
-  #   endpointRef:
-  #     name: snowplow-endpoint
-  #     namespace: {{ .Values.global.krateoNamespace }}
-  #   headers:
-  #   - 'Accept: application/json'
-  #   continueOnError: true
-  #   exportJwt: true   
+  - name: createall # create all resources
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-create-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    verb: GET
+    endpointRef:
+      name: snowplow-endpoint
+      namespace: {{ .Values.global.krateoNamespace }}
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    exportJwt: true
+  - name: deleteall # delete all resources not in use
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-gcp-delete-all-builds-id-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    verb: GET
+    endpointRef:
+      name: snowplow-endpoint
+      namespace: {{ .Values.global.krateoNamespace }}
+    headers:
+    - 'Accept: application/json'
+    continueOnError: true
+    exportJwt: true   
   - name: getBuildsId
     verb: GET
     continueOnError: true
@@ -34,11 +34,11 @@ spec:
       namespace: {{ .Values.global.krateoNamespace }}
     filter: >-
       (
-        ( .getBuilds.builds // [])
-        | map(select(.substitutions.TRIGGER_NAME == "{{ .Values.global.compositionName }}-trigger"))
-        | map({name: .id + "-buildid-button", namespace: "{{ .Values.global.buildPanelNamespace }}"})
+        ( .getBuildsId.builds // [])
+        | map(select((.substitutions.TRIGGER_NAME // "") | startswith("{{ .Values.global.compositionName }}-trigger")))
+        | map({name: .id + "-buildid-button", namespace: "{{ .Values.global.compositionNamespace }}"})
       )
-      | .[:3]
+      | .[:6]
   - name: getBuilds
     verb: GET
     continueOnError: true
@@ -54,7 +54,7 @@ spec:
       list: (
         (
           ( .getBuilds.builds // [])
-          | map(select(.substitutions.TRIGGER_NAME == "{{ .Values.global.compositionName }}-trigger"))
+          | map(select((.substitutions.TRIGGER_NAME // "") | startswith("{{ .Values.global.compositionName }}-trigger")))
           | map(
               [
                 {
@@ -89,5 +89,5 @@ spec:
               ]
             )
         )
-      | .[:3] ),
+      | .[:6] ),
     }

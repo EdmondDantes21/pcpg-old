@@ -1,0 +1,98 @@
+apiVersion: templates.krateo.io/v1
+kind: RESTAction
+metadata:
+  name: {{ .Values.global.compositionName }}-gcp-get-builds-to-create-delete-resources-restaction
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  api:
+  - name: getBuilds
+    verb: GET
+    continueOnError: true
+    path: "/v1/projects/{{ .Values.global.projectID }}/locations/{{ .Values.global.projectLocation }}/builds"
+    endpointRef:
+      name: gcp-endpoint-cloudbuild
+      namespace: {{ .Values.global.krateoNamespace }}
+    filter: >-
+      (
+        .getBuilds.builds
+        | map(select((.substitutions.TRIGGER_NAME // "") | startswith("{{ .Values.global.compositionName }}-trigger")))
+        | map({name: .id, namespace: "{{ .Values.global.compositionNamespace }}"})
+      )
+      | .[:6]
+  - name: getButtons
+    continueOnError: true
+    errorKey: getButtonsError
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/{{ .Values.global.compositionNamespace }}/buttons?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-button-for-builds" }
+    filter: "(.getButtons.items? // []) | map({name: (.metadata.name | rtrimstr(\"-buildid-button\")), namespace: .metadata.namespace})"
+  - name: getRestaction
+    continueOnError: true
+    errorKey: getRestactionError
+    path: ${ "/apis/templates.krateo.io/v1/namespaces/{{ .Values.global.compositionNamespace }}/restactions?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-restactions-for-builds" }
+    filter: "(.getRestaction.items? // []) | map({name: (.metadata.name | rtrimstr(\"-buildid-restactions\")), namespace: .metadata.namespace})"
+  - name: getYaml
+    continueOnError: true
+    errorKey: getYamlError
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/{{ .Values.global.compositionNamespace }}/yamlviewers?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-yamlviewers-for-builds" }
+    filter: "(.getYaml.items? // []) | map({name: (.metadata.name | rtrimstr(\"-buildid-yamlviewers\")), namespace: .metadata.namespace})"
+  filter: >
+    (.getButtons // []) as $buttons
+    | (.getBuilds // []) as $builds
+    | (.getYaml // []) as $yamlviewers
+    | (.getRestaction // []) as $restactions
+    | (.getYaml // []) as $yamlviewers
+    | {
+        buttons: {
+          buttonsToCreate: (
+            $builds
+            | map(select(
+                (.name, .namespace) as $buildspair
+                | all($buttons[]; (.name, .namespace) != $buildspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          buttonsToDelete: (
+            $buttons
+            | map(select(
+                (.name, .namespace) as $buttonspair
+                | all($builds[]; (.name, .namespace) != $buttonspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        },
+        yamlviewers: {
+          yamlviewersToCreate: (
+            $builds
+            | map(select(
+                (.name, .namespace) as $buildspair
+                | all($yamlviewers[]; (.name, .namespace) != $buildspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          yamlviewersToDelete: (
+            $yamlviewers
+            | map(select(
+                (.name, .namespace) as $yamlviewerspair
+                | all($builds[]; (.name, .namespace) != $yamlviewerspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        },
+        restactions: {
+          restactionsToCreate: (
+            $builds
+            | map(select(
+                (.name, .namespace) as $buildspair
+                | all($restactions[]; (.name, .namespace) != $buildspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          restactionsToDelete: (
+            $restactions
+            | map(select(
+                (.name, .namespace) as $restactionspair
+                | all($builds[]; (.name, .namespace) != $restactionspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        }
+      }

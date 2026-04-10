@@ -81,7 +81,7 @@ spec:
     actions:
       rest:
         - id: scale-down
-          resourceRefId: -scale-down
+          resourceRefId: scale-down
           type: rest
           headers:
             - 'Content-Type: application/json'

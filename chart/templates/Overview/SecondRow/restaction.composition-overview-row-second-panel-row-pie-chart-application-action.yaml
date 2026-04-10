@@ -6,7 +6,7 @@ metadata:
 spec:
   api:
     - name: getNodes
-      path: api/v1/applications/{{ .Values.global.compositionName }}/resource-tree?namespace={{ .Values.global.krateoNamespace }}
+      path: api/v1/applications/{{ .Release.Name }}/resource-tree?namespace={{ .Values.global.krateoNamespace }}
       verb: GET
       headers:
         - 'Accept: application/json'
@@ -17,6 +17,11 @@ spec:
       errorKey: getNodesError
       filter: >-
         {
-          ready: ([((.getNodes.nodes)? // [])[] | select(.health.status == "Healthy" or .health.status == null )] | length),
-          notReady: ([((.getNodes.nodes)? // [])[] | select( .health.status == "Progressing" or .health.status == "Degraded" or .health.status == "Suspended" )] | length)
+          "ready": (([.getNodes.nodes[]? | select(.health.status == "Healthy" or .health.status == null)] | length) // 0),
+          "notReady": (([.getNodes.nodes[]? | select(.health.status == "Progressing" or .health.status == "Degraded" or .health.status == "Suspended")] | length) // 0)
         }
+# Old filter before adding default values to avoid errors when getNodes.nodes is null or undefined
+#        {
+#          ready: ([((.getNodes.nodes)? // [])[] | select(.health.status == "Healthy" or .health.status == null )] | length),
+#          notReady: ([((.getNodes.nodes)? // [])[] | select( .health.status == "Progressing" or .health.status == "Degraded" or .health.status == "Suspended" )] | length)
+#        }

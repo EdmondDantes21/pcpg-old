@@ -7,11 +7,14 @@ spec:
   widgetData:
     actions: {}
     title: Application Status
+    icon:
+      name: fa-cube
+      color: blue
     items:
-      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+      - resourceRefId: composition-overview-row-second-panel-row-pie-chart-application
   resourcesRefs:
     items:
-      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+      - id: composition-overview-row-second-panel-row-pie-chart-application
         apiVersion: widgets.templates.krateo.io/v1beta1
         name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
         namespace: {{ .Values.global.compositionNamespace }}

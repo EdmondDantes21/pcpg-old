@@ -42,11 +42,29 @@ spec:
     errorKey: getRestactionError
     path: ${ "/apis/templates.krateo.io/v1/namespaces/" + (.) + "/restactions?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-restaction-for-pods" }
     filter: "(.getRestaction.items? // []) | map({name: .metadata.name, namespace: .metadata.namespace})"
+  - name: getTabLists
+    continueOnError: true
+    dependsOn: 
+      name: getNamespaces
+      iterator: .getNamespaces
+    errorKey: getRestactionError
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/" + (.) + "/tablists?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-tablists-for-pods" }
+    filter: "(.getRestaction.items? // []) | map({name: .metadata.name, namespace: .metadata.namespace})"
+  - name: getLinecharts
+    continueOnError: true
+    dependsOn: 
+      name: getNamespaces
+      iterator: .getNamespaces
+    errorKey: getRestactionError
+    path: ${ "/apis/widgets.templates.krateo.io/v1beta1/namespaces/" + (.) + "/linecharts?labelSelector=krateo.io%2Fmanaged-by%3D{{ .Values.global.compositionName }}-linecharts-for-pods" }
+    filter: "(.getRestaction.items? // []) | map({name: .metadata.name, namespace: .metadata.namespace})"
   filter: >
     (.getButtons // []) as $buttons
     | (.getPods // []) as $pods
     | (.getParagraphs // []) as $paragraphs
     | (.getRestaction // []) as $restactions
+    | (.getTabLists // []) as $tablists
+    | (.getLinecharts // []) as $linecharts
     | {
         buttons: {
           buttonsToCreate: (
@@ -98,6 +116,42 @@ spec:
             | map(select(
                 (.name, .namespace) as $restactionspair
                 | all($pods[]; (.name, .namespace) != $restactionspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        },
+        tablists: {
+          tablistsToCreate: (
+            $pods
+            | map(select(
+                (.name, .namespace) as $podspair
+                | all($tablists[]; (.name, .namespace) != $podspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          tablistsToDelete: (
+            $tablists
+            | map(select(
+                (.name, .namespace) as $tablistspair
+                | all($pods[]; (.name, .namespace) != $tablistspair)
+              ))
+            | unique_by(.name, .namespace)
+          )
+        },
+        linecharts: {
+          linechartsToCreate: (
+            $pods
+            | map(select(
+                (.name, .namespace) as $podspair
+                | all($linecharts[]; (.name, .namespace) != $podspair)
+              ))
+            | unique_by(.name, .namespace)
+          ),
+          linechartsToDelete: (
+            $linecharts
+            | map(select(
+                (.name, .namespace) as $linechartspair
+                | all($pods[]; (.name, .namespace) != $linechartspair)
               ))
             | unique_by(.name, .namespace)
           )

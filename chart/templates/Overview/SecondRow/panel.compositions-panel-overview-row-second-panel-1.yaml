@@ -6,12 +6,15 @@ metadata:
 spec:
   widgetData:
     actions: {}
+    icon:
+      name: fa-cubes-stacked
+      color: blue
     title: Infrastructure Status
     items:
-      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
+      - resourceRefId: composition-overview-row-second-panel-row-pie-chart-infrastructure
   resourcesRefs:
     items:
-      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
+      - id: composition-overview-row-second-panel-row-pie-chart-infrastructure
         apiVersion: widgets.templates.krateo.io/v1beta1
         name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
         namespace: {{ .Values.global.compositionNamespace }}

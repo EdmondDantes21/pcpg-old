@@ -15,7 +15,7 @@ spec:
           resourceRefId: composition-values-form-edit
           type: openDrawer
           size: large
-          title: "Composition name: {{ .Values.global.compositionName }}, namespace: {{ .Values.global.compositionNamespace }}"
+          title: "Composition resource: {{ .Values.global.compositionResource }}, name: {{ .Values.global.compositionName }}, namespace: {{ .Values.global.compositionNamespace }}"
   resourcesRefs:
     items:
       - id: composition-values-form-edit

@@ -7,10 +7,10 @@ spec:
   widgetData:
     actions: {}
     items:
-      - resourceRefId: {{ .Values.global.compositionName }}-composition-builds-panel-table
+      - resourceRefId: composition-builds-panel-table
   resourcesRefs:
     items:
-      - id: {{ .Values.global.compositionName }}-composition-builds-panel-table
+      - id: composition-builds-panel-table
         apiVersion: widgets.templates.krateo.io/v1beta1
         name: {{ .Values.global.compositionName }}-composition-builds-panel-table
         namespace: {{ .Values.global.compositionNamespace }}

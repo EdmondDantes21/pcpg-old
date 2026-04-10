@@ -15,8 +15,8 @@ spec:
         resourceRefId: composition-status-panel
       - label: Application Status
         resourceRefId: argo-checks-column
-      - label: Graphic Application Status (CD)
-        resourceRefId: application-status-panel
+#      - label: Graphic Application Status (CD)
+#        resourceRefId: application-status-panel
       - label: Pods Status
         resourceRefId: composition-pods-logs-panel
       - label: Build CI

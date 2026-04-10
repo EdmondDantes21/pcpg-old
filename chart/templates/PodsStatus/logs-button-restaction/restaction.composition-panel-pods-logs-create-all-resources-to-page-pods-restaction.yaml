@@ -145,7 +145,7 @@ spec:
             "widgetDataTemplate": [
               {
                 "forPath": "markdown",
-                "expression": "${ .text.logs // .error.message // \"Nessun log disponibile.\" }"
+                "expression": "${ \"```\\n\" + (.text.logs // .error.message // \"Nessun log disponibile.\") + \"\\n```\" }"
               }
             ],
             "apiRef": {
