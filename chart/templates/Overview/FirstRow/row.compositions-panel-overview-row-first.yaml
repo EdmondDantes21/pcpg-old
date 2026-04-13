@@ -1,19 +1,19 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Row
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-first
+  name: {{ .Values.global.compositionName }}-composition-overview-row-first
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
     allowedResources:
       - panels
     items: 
-      - resourceRefId: composition-overview-row-first-panel-intro
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
   resourcesRefs:
     items: 
-      - id: composition-overview-row-first-panel-intro
+      - id: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
+        name: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro
         namespace: {{ .Values.global.compositionNamespace }}
         resource: panels
         verb: GET

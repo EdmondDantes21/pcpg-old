@@ -2,7 +2,7 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-list-all-resources-to-page-pods-restaction
+  name: {{ .Values.global.compositionName }}-list-all-resources-to-page-pods-restaction
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
@@ -15,7 +15,7 @@ spec:
         | map({name: .metadata.name, namespace: .metadata.namespace, deployment: .spec.containers[].name, status: .status.phase  })
       ) 
   - name: createall # create all resources
-    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-create-all-resources-to-page-pods-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-create-all-resources-to-page-pods-restaction&namespace={{ .Values.global.compositionNamespace }}"
     verb: GET
     endpointRef:
       name: snowplow-endpoint
@@ -25,7 +25,7 @@ spec:
     continueOnError: true
     exportJwt: true
   - name: deleteall # delete all resources not in use
-    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-delete-all-resources-to-page-pods-restaction&namespace={{ .Values.global.compositionNamespace }}"
+    path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-delete-all-resources-to-page-old-logs-restaction&namespace={{ .Values.global.compositionNamespace }}"
     verb: GET
     endpointRef:
       name: snowplow-endpoint
@@ -34,6 +34,46 @@ spec:
     - 'Accept: application/json'
     continueOnError: true
     exportJwt: true
+  # - name: createall-oldlogs # create all resources
+  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-create-all-resources-to-page-old-logs-restaction&namespace={{ .Values.global.compositionNamespace }}"
+  #   verb: GET
+  #   endpointRef:
+  #     name: snowplow-endpoint
+  #     namespace: {{ .Values.global.krateoNamespace }}
+  #   headers:
+  #   - 'Accept: application/json'
+  #   continueOnError: true
+  #   exportJwt: true
+  # - name: deleteall-oldlogs # delete all resources not in use
+  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-delete-all-resources-to-page-restart-restaction&namespace={{ .Values.global.compositionNamespace }}"
+  #   verb: GET
+  #   endpointRef:
+  #     name: snowplow-endpoint
+  #     namespace: {{ .Values.global.krateoNamespace }}
+  #   headers:
+  #   - 'Accept: application/json'
+  #   continueOnError: true
+  #   exportJwt: true
+  # - name: createall-restart # create all resources
+  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-create-all-resources-to-page-restart-restaction&namespace={{ .Values.global.compositionNamespace }}"
+  #   verb: GET
+  #   endpointRef:
+  #     name: snowplow-endpoint
+  #     namespace: {{ .Values.global.krateoNamespace }}
+  #   headers:
+  #   - 'Accept: application/json'
+  #   continueOnError: true
+  #   exportJwt: true
+  # - name: deleteall-restart # delete all resources not in use
+  #   path: "/call?apiVersion=templates.krateo.io/v1&resource=restactions&name={{ .Values.global.compositionName }}-delete-all-resources-to-page-pods-restaction&namespace={{ .Values.global.compositionNamespace }}"
+  #   verb: GET
+  #   endpointRef:
+  #     name: snowplow-endpoint
+  #     namespace: {{ .Values.global.krateoNamespace }}
+  #   headers:
+  #   - 'Accept: application/json'
+  #   continueOnError: true
+  #   exportJwt: true
   filter: >-
     {
       pods: (
@@ -70,3 +110,59 @@ spec:
           )
         )
     }
+
+---
+
+
+  # filter: >-
+  #   {
+  #     pods: (
+  #       .getPods
+  #     ),
+  #     oldlogs: (
+  #       .getPods | map({name: .name + "-old-logs", namespace: "krateo-podspanelobject-ns" })
+  #     ),
+  #     restart: (
+  #       .getPods | map({name: .name + "-restart", namespace: "krateo-podspanelobject-ns" })
+  #     ),
+  #     list: (
+  #       .getPods
+  #       | map(
+  #           [
+  #             {
+  #               "valueKey": "deploymentName",
+  #               "kind": "jsonSchemaType",
+  #               "type": "string",
+  #               "stringValue": .deployment
+  #             },
+  #             {
+  #               "valueKey": "podName",
+  #               "kind": "jsonSchemaType",
+  #               "type": "string",
+  #               "stringValue": .name
+  #             },
+  #             {
+  #               "valueKey": "status",
+  #               "kind": "jsonSchemaType",
+  #               "type": "string",
+  #               "stringValue": .status
+  #             },
+  #             {
+  #               valueKey: "logs_button",
+  #               kind: "widget",
+  #               resourceRefId: .name
+  #             },
+  #             {
+  #               valueKey: "old_logs_button",
+  #               kind: "widget",
+  #               resourceRefId: .name + "-old-logs"
+  #             },
+  #             {
+  #               valueKey: "restart_button",
+  #               kind: "widget",
+  #               resourceRefId: .name + "-restart"
+  #             }
+  #           ]
+  #         )
+  #       )
+  #   }

@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Row
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-button-row
+  name: {{ .Values.global.compositionName }}-button-row
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -19,19 +19,19 @@ spec:
       - id: button-restart
         apiVersion: widgets.templates.krateo.io/v1beta1
         resource: buttons
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-restart-button
+        name: {{ .Values.global.compositionName }}-composition-panel-restart-button
         namespace: {{ .Values.global.compositionNamespace }}
         verb: GET
       - id: button-scale-down
         apiVersion: widgets.templates.krateo.io/v1beta1
         resource: buttons
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-scale-down-button
+        name: {{ .Values.global.compositionName }}-composition-panel-scale-down-button
         namespace: {{ .Values.global.compositionNamespace }}
         verb: GET
       - id: button-scale-up
         apiVersion: widgets.templates.krateo.io/v1beta1
         resource: buttons
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-scale-up-button
+        name: {{ .Values.global.compositionName }}-composition-panel-scale-up-button
         namespace: {{ .Values.global.compositionNamespace }}
         verb: GET
 
@@ -40,7 +40,7 @@ spec:
 kind: Button
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-scale-up-button
+  name: {{ .Values.global.compositionName }}-composition-panel-scale-up-button
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -61,7 +61,7 @@ spec:
       - id: scale-up
         apiVersion: templates.krateo.io/v1
         resource: restactions
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-scale-up
+        name: {{ .Values.global.compositionName }}-scale-up
         namespace: {{ .Values.global.compositionNamespace }}
         verb: GET
 ---
@@ -69,7 +69,7 @@ spec:
 kind: Button
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-scale-down-button
+  name: {{ .Values.global.compositionName }}-composition-panel-scale-down-button
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -81,7 +81,7 @@ spec:
     actions:
       rest:
         - id: scale-down
-          resourceRefId: scale-down
+          resourceRefId: -scale-down
           type: rest
           headers:
             - 'Content-Type: application/json'
@@ -90,7 +90,7 @@ spec:
       - id: scale-down
         apiVersion: templates.krateo.io/v1
         resource: restactions
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-scale-down
+        name: {{ .Values.global.compositionName }}-scale-down
         namespace: {{ .Values.global.compositionNamespace }}
         verb: GET
 
@@ -99,7 +99,7 @@ spec:
 kind: Button
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-restart-button
+  name: {{ .Values.global.compositionName }}-composition-panel-restart-button
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -120,6 +120,6 @@ spec:
       - id: restart
         apiVersion: templates.krateo.io/v1
         resource: restactions
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-restart
+        name: {{ .Values.global.compositionName }}-restart
         namespace: {{ .Values.global.compositionNamespace }}
         verb: GET

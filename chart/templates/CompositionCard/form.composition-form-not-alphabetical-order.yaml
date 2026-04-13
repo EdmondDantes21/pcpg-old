@@ -2,7 +2,7 @@
 kind: Form
 apiVersion: widgets.templates.krateo.io/v1beta1
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-form-not-alphabetical-order
+  name: {{ .Values.global.compositionName }}-composition-form-not-alphabetical-order
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -13,21 +13,24 @@ spec:
         - id: update-action-from-string-schema
           onEventNavigateTo:
             eventReason: "CompositionUpdated"
-            url: '${ "/compositions/" + .response.metadata.namespace + "/" + (.response.kind | ascii_downcase) + "/" + .response.metadata.name }'
+            url: '${ "/compositions/" + .response.metadata.namespace + "/" + .response.metadata.name }'
             timeout: 50
+          payloadKey: spec
           successMessage: '${"Successfully updated " + .response.metadata.name + " composition in namespace " + .response.metadata.namespace }'
+          errorMessage: '${"Composition update failed" }'
           resourceRefId: composition-to-patch
           type: rest
-          payloadToOverride:
-          - name: spec
-            value: ${ .json }
+          # payloadToOverride:
+          # - name: metadata.name
+          #   value: ""
+          # - name: metadata.namespace
+          #   value: ""
           headers:
           - "Content-Type: application/merge-patch+json"
   widgetDataTemplate:
     - forPath: stringSchema
-      expression: ${ .getNotOrderedSchema }
-    - forPath: initialValues
-      expression: ${ .getCompositionSpec }
+      expression: >
+        ${ import "custom" as c; c::update_string_schema_defaults(.) }
   resourcesRefs:
     items:
     - id: composition-to-patch
@@ -37,6 +40,6 @@ spec:
       resource: {{ .Values.global.compositionResource }}
       verb: PATCH
   apiRef:
-    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-schema
+    name: {{ .Values.global.compositionName }}-composition-schema
     namespace: {{ .Values.global.compositionNamespace }}
 {{- end }}

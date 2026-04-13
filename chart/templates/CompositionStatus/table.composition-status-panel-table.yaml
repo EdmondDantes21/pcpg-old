@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Table
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-status-panel-table
+  name: {{ .Values.global.compositionName }}-composition-status-panel-table
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
@@ -27,5 +27,5 @@ spec:
     - forPath: data
       expression: ${ .tableRows }
   apiRef:
-    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-status
+    name: {{ .Values.global.compositionName }}-composition-status
     namespace: {{ .Values.global.compositionNamespace }}

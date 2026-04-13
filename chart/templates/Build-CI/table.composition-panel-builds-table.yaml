@@ -1,11 +1,11 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Table
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-builds-panel-table
+  name: {{ .Values.global.compositionName }}-composition-builds-panel-table
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   apiRef:
-    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-gcp-composition-builds-restaction
+    name: {{ .Values.global.compositionName }}-gcp-composition-builds-restaction
     namespace: {{ .Values.global.compositionNamespace }}
   widgetData:
     allowedResources:

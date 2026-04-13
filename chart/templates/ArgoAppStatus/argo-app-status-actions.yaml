@@ -1,12 +1,12 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-trigger-argo-sync
+  name: {{.Values.global.compositionName }}-trigger-argo-sync
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: patchArgoApp
-    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Release.Name }}
+    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Values.global.compositionName }}
     verb: PATCH
     headers:
       - "Content-Type: application/merge-patch+json"
@@ -30,12 +30,12 @@ spec:
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-argoapp-to-table-action
+  name: {{.Values.global.compositionName }}-argoapp-to-table-action
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: getArgoApp
-    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Release.Name }}
+    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Values.global.compositionName }}
     verb: GET
     continueOnError: false
   
@@ -75,12 +75,12 @@ spec:
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-argo-details-action
+  name: {{.Values.global.compositionName }}-argo-details-action
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: getArgoApp
-    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Release.Name }}
+    path: /apis/argoproj.io/v1alpha1/namespaces/krateo-system/applications/{{ .Values.global.compositionName }}
     verb: GET
     continueOnError: false
   filter: |
@@ -89,10 +89,10 @@ spec:
     (.status.sync.revision // "N/A") as $rev |
     (if $s.chart then "Helm Chart ☸️" else "Git Repo 🐙" end) as $type |
     ($s.chart // "Source") as $name |
-    (.status.sync.revisions[0] // "HEAD") as $target |
+    ($s.targetRevision // "HEAD") as $target |
 
     {
-      "content": "# Continuous Deployment (Application Status)\n\n## Source\n\n**\($type)** \(if $name != "Source" then "(\($name))" else "" end)\n- **URL:** [\($s.repoURL)](\($s.repoURL))\n- **Helm Chart Version:** **\($target)**"
+      "content": "# Continuous Deployment (Application Status)\n\n## Source\n\n**\($type)** \(if $name != "Source" then "(\($name))" else "" end)\n- **URL:** [\($s.repoURL)](\($s.repoURL))\n- **Target:** **\($target)**\n- **Revision:** **\($rev)**"
     }
     
 ---

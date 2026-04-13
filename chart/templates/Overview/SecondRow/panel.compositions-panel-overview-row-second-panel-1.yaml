@@ -1,22 +1,19 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Panel
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-1
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
     actions: {}
-    icon:
-      name: fa-cubes-stacked
-      color: blue
     title: Infrastructure Status
     items:
-      - resourceRefId: composition-overview-row-second-panel-row-pie-chart-infrastructure
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
   resourcesRefs:
     items:
-      - id: composition-overview-row-second-panel-row-pie-chart-infrastructure
+      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
+        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure
         namespace: {{ .Values.global.compositionNamespace }}
         resource: piecharts
         verb: GET

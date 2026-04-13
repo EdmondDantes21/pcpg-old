@@ -1,12 +1,12 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-application-status
+  name: {{ .Values.global.compositionName }}-application-status
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
     - name: getNodes
-      path: api/v1/applications/{{ .Release.Name }}/resource-tree?namespace={{ .Values.global.krateoNamespace }}
+      path: api/v1/applications/{{ .Values.global.compositionName }}/resource-tree?namespace={{ .Values.global.krateoNamespace }}
       verb: GET
       headers:
         - 'Accept: application/json'
@@ -30,148 +30,70 @@ spec:
         name: .name,
         namespace: (if .namespace == null or .namespace == "" then "clusterscoped" else .namespace end),
         uid: if .uid then .uid else "none" end,
-        
-        # --- FIX VERSIONE SERVICE ---
-        version: (
-          if (.images != null and (.images | length) > 0) then 
-            (.images[0] | split(":") | last)
-          elif .version != null and .version != "" then
-            .version
-          else
-            ""
-          end
-        ),
-
-        resourceVersion: if .resourceVersion then .resourceVersion else "none" end,
-        
+        version: .version,
+        resourceVersion:  if .resourceVersion then .resourceVersion else "none" end,
         icon: (
-          if .kind == "Deployment" then {name: "fa-clone", color: "blue"}
-          elif .kind == "StatefulSet" then {name: "fa-clone", color: "blue"}
-          elif .kind == "Service" then {name: "fa-solid fa-network-wired", color: "violet"}
-          elif .kind == "Pod" then {name: "fa-solid fa-cubes", color: "orange"}
-          elif .kind == "Ingress" then {name: "fa-solid fa-route", color: "green"}
-          elif .kind == "ConfigMap" then {name: "fa-solid fa-file-lines", color: "gray"}
-          elif .kind == "Secret" then {name: "fa-solid fa-key", color: "orange"}
-          elif .kind == "PersistentVolumeClaim" then {name: "fa-solid fa-database", color: "gray"}
-          elif .kind == "HorizontalPodAutoscaler" then {name: "fa-arrows-up-down", color: "gray"}
-          elif .kind == "Job" or .kind == "CronJob" then {name: "fa-briefcase", color: "gray"}
-          elif .kind == "ServiceAccount" or .kind == "Role" or .kind == "RoleBinding" then {name: "fa-user-shield", color: "blue"}
-          elif .kind == "Namespace" then {name: "fa-sitemap", color: "blue"}
-          elif .kind == "Application" then {name: "fa-dharmachakra", color: "blue"}
-          elif .kind == "NetworkPolicy" then {name: "fa-shield-alt", color: "blue"}
-          else {name: "fa-cube", color: "blue"}
+          if .kind == "Deployment" then
+            {name: "fa-clone", color: "blue"}
+          elif .kind == "StatefulSet" then
+            {name: "fa-clone", color: "blue"}
+          elif .kind == "Service" then
+            {name: "fa-solid fa-network-wired", color: "violet"}
+          elif .kind == "Pod" then
+            {name: "fa-solid fa-cubes", color: "orange"}
+          elif .kind == "Ingress" then
+            {name: "fa-solid fa-route", color: "green"}
+          elif .kind == "ConfigMap" then
+            {name: "fa-solid fa-file-lines", color: "gray"}
+          elif .kind == "Secret" then
+            {name: "fa-solid fa-key", color: "orange"}
+          elif .kind == "PersistentVolumeClaim" then
+            {name: "fa-solid fa-database", color: "gray"}
+          elif .kind == "HorizontalPodAutoscaler" then
+            {name: "fa-arrows-up-down", color: "gray"}
+          elif .kind == "Job" then
+            {name: "fa-briefcase", color: "gray"}
+          elif .kind == "CronJob" then
+            {name: "fa-briefcase", color: "gray"}
+          elif .kind == "ServiceAccount" then
+            {name: "fa-user-shield", color: "blue"}
+          elif .kind == "Role" then
+            {name: "fa-user-lock", color: "blue"}
+          elif .kind == "RoleBinding" then
+            {name: "fa-user-lock", color: "blue"}
+          elif .kind == "ClusterRole" then
+            {name: "fa-user-shield", color: "blue"}
+          elif .kind == "ClusterRoleBinding" then
+            {name: "fa-user-shield", color: "blue"}
+          elif .kind == "Namespace" then
+            {name: "fa-sitemap", color: "blue"}
+          elif .kind == "Application" then
+            {name: "fa-dharmachakra", color: "blue"}
+          elif .kind == "NetworkPolicy" then
+            {name: "fa-shield-alt", color: "blue"}
+          else
+            {name: "fa-dharmachakra", color: "blue"}
           end
         ),
-
         parentRefs: (.parentRefs // [] | map({
           kind: .kind,
           name: .name,
           namespace: .namespace,
-          uid: .uid
+          uid: .uid,
+          version: if .version then .version else "none" end
         })),
-
         statusIcon: (
-          (if .health.status == "Healthy" then {name: "fa-check", color: "green"}
-           elif .health.status == "Progressing" then {name: "fa-circle-notch", color: "blue"}
-           elif .health.status == "Degraded" then {name: "fa-exclamation-triangle", color: "red"}
-           elif .health.status == "Suspended" then {name: "fa-pause", color: "orange"}
-           elif .health.status == "Missing" then {name: "fa-ghost", color: "gray"}
-           else {name: "fa-check", color: "green"}
-           end) 
-           + 
-           { 
-             message: (
-               (.health.status // "No Status") + 
-               (if .health.message then " - " + .health.message else "" end) +
-               (if .syncStatus then " [" + .syncStatus + "]" else "" end)
-             )
-           }
+          if .health.status == "Healthy" then
+            {name: "fa-check", color: "green", message: (.health.message // "Healthy")}
+          elif .health.status == "Progressing" then
+            {name: "fa-circle-notch", color: "blue", message: (.health.message // "Progressing")}
+          elif .health.status == "Degraded" then
+            {name: "fa-exclamation-triangle", color: "red", message: (.health.message // "Degraded")}
+          elif .health.status == "Suspended" then
+            {name: "fa-pause", color: "orange", message: (.health.message // "Suspended")}
+          else
+            {name: "fa-check", color: "green", message: (.health.status // "No Status")}
+          end 
         )
       }))
     }
-
-
-
----
-
-    # {
-    #   "data": ((.getNodes.nodes // []) 
-    #   | map(select(
-    #       .kind != "ConfigAuditReport" and
-    #       .kind != "VulnerabilityReport" and
-    #       .kind != "ExposedSecretReport" and
-    #       .kind != "SbomReport"
-    #       )) 
-    #   | map({
-    #     date: if .createdAt then .createdAt else "none" end,
-    #     kind: .kind,
-    #     name: .name,
-    #     namespace: (if .namespace == null or .namespace == "" then "clusterscoped" else .namespace end),
-    #     uid: if .uid then .uid else "none" end,
-    #     version: if .kind == "Pod" then ( .images[0] | sub(".*:"; "") ) else .version end,
-    #     resourceVersion:  if .resourceVersion then .resourceVersion else "none" end,
-    #     icon: (
-    #       if .kind == "Deployment" then
-    #         {name: "fa-clone", color: "blue"}
-    #       elif .kind == "StatefulSet" then
-    #         {name: "fa-clone", color: "blue"}
-    #       elif .kind == "Service" then
-    #         {name: "fa-solid fa-network-wired", color: "violet"}
-    #       elif .kind == "Pod" then
-    #         {name: "fa-solid fa-cubes", color: "orange"}
-    #       elif .kind == "Ingress" then
-    #         {name: "fa-solid fa-route", color: "green"}
-    #       elif .kind == "ConfigMap" then
-    #         {name: "fa-solid fa-file-lines", color: "gray"}
-    #       elif .kind == "Secret" then
-    #         {name: "fa-solid fa-key", color: "orange"}
-    #       elif .kind == "PersistentVolumeClaim" then
-    #         {name: "fa-solid fa-database", color: "gray"}
-    #       elif .kind == "HorizontalPodAutoscaler" then
-    #         {name: "fa-arrows-up-down", color: "gray"}
-    #       elif .kind == "Job" then
-    #         {name: "fa-briefcase", color: "gray"}
-    #       elif .kind == "CronJob" then
-    #         {name: "fa-briefcase", color: "gray"}
-    #       elif .kind == "ServiceAccount" then
-    #         {name: "fa-user-shield", color: "blue"}
-    #       elif .kind == "Role" then
-    #         {name: "fa-user-lock", color: "blue"}
-    #       elif .kind == "RoleBinding" then
-    #         {name: "fa-user-lock", color: "blue"}
-    #       elif .kind == "ClusterRole" then
-    #         {name: "fa-user-shield", color: "blue"}
-    #       elif .kind == "ClusterRoleBinding" then
-    #         {name: "fa-user-shield", color: "blue"}
-    #       elif .kind == "Namespace" then
-    #         {name: "fa-sitemap", color: "blue"}
-    #       elif .kind == "Application" then
-    #         {name: "fa-dharmachakra", color: "blue"}
-    #       elif .kind == "NetworkPolicy" then
-    #         {name: "fa-shield-alt", color: "blue"}
-    #       else
-    #         {name: "fa-dharmachakra", color: "blue"}
-    #       end
-    #     ),
-    #     parentRefs: (.parentRefs // [] | map({
-    #       kind: .kind,
-    #       name: .name,
-    #       namespace: .namespace,
-    #       uid: .uid,
-    #       version: if .version then .version else "none" end
-    #     })),
-    #     statusIcon: (
-    #       if .health.status == "Healthy" then
-    #         {name: "fa-check", color: "green", message: (.health.message // "Healthy")}
-    #       elif .health.status == "Progressing" then
-    #         {name: "fa-circle-notch", color: "blue", message: (.health.message // "Progressing")}
-    #       elif .health.status == "Degraded" then
-    #         {name: "fa-exclamation-triangle", color: "red", message: (.health.message // "Degraded")}
-    #       elif .health.status == "Suspended" then
-    #         {name: "fa-pause", color: "orange", message: (.health.message // "Suspended")}
-    #       else
-    #         {name: "fa-check", color: "green", message: (.health.status // "No Status")}
-    #       end 
-    #     )
-    #   }))
-    # }

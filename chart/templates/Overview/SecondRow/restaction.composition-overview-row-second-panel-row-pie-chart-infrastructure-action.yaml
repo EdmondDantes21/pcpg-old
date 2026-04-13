@@ -1,12 +1,12 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure-action
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-infrastructure-action
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
   - name: composition_status
-    path: "/call?apiVersion=templates.krateo.io%2Fv1&resource=restactions&name={{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-status&namespace={{ .Values.global.compositionNamespace }}"
+    path: "/call?apiVersion=templates.krateo.io%2Fv1&resource=restactions&name={{ .Values.global.compositionName }}-composition-status&namespace={{ .Values.global.compositionNamespace }}"
     continueOnError: true
     endpointRef:
       name: snowplow-endpoint

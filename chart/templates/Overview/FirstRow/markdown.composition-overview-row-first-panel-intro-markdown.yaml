@@ -1,7 +1,7 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Markdown
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro-markdown
+  name: {{ .Values.global.compositionName }}-composition-overview-row-first-panel-intro-markdown
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:

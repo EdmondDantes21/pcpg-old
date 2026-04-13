@@ -1,12 +1,12 @@
 apiVersion: templates.krateo.io/v1
 kind: RESTAction
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application-action
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application-action
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   api:
     - name: getNodes
-      path: api/v1/applications/{{ .Release.Name }}/resource-tree?namespace={{ .Values.global.krateoNamespace }}
+      path: api/v1/applications/{{ .Values.global.compositionName }}/resource-tree?namespace={{ .Values.global.krateoNamespace }}
       verb: GET
       headers:
         - 'Accept: application/json'
@@ -17,11 +17,6 @@ spec:
       errorKey: getNodesError
       filter: >-
         {
-          "ready": (([.getNodes.nodes[]? | select(.health.status == "Healthy" or .health.status == null)] | length) // 0),
-          "notReady": (([.getNodes.nodes[]? | select(.health.status == "Progressing" or .health.status == "Degraded" or .health.status == "Suspended")] | length) // 0)
+          ready: ([((.getNodes.nodes)? // [])[] | select(.health.status == "Healthy" or .health.status == null )] | length),
+          notReady: ([((.getNodes.nodes)? // [])[] | select( .health.status == "Progressing" or .health.status == "Degraded" or .health.status == "Suspended" )] | length)
         }
-# Old filter before adding default values to avoid errors when getNodes.nodes is null or undefined
-#        {
-#          ready: ([((.getNodes.nodes)? // [])[] | select(.health.status == "Healthy" or .health.status == null )] | length),
-#          notReady: ([((.getNodes.nodes)? // [])[] | select( .health.status == "Progressing" or .health.status == "Degraded" or .health.status == "Suspended" )] | length)
-#        }

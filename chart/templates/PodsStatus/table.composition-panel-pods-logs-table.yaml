@@ -1,36 +1,56 @@
-# apiVersion: widgets.templates.krateo.io/v1beta1
-# kind: Table
-# metadata:
-#   name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-pods-logs-table
-#   namespace: {{ .Values.global.compositionNamespace }}
-# spec:
-#   apiRef:
-#     name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-list-all-resources-to-page-pods-restaction
-#     namespace: {{ .Values.global.compositionNamespace }}
-#   widgetData:
-#     allowedResources:
-#     - buttons
-#     prefix: admin-page-logs
-#     columns:
-#     - title: deployment
-#       valueKey: deploymentName
-#     - title: pod
-#       valueKey: podName
-#     - title: Status
-#       valueKey: status
-#     - title: Logs
-#       valueKey: logs_button
-#     data: []
-#     pageSize: 10
-#   widgetDataTemplate:
-#     - forPath: data
-#       expression: ${ .list }
-#   resourcesRefsTemplate:
-#     - iterator: ${ .pods }
-#       template:
-#         id: ${ .name }
-#         apiVersion: widgets.templates.krateo.io/v1beta1
-#         resource: buttons
-#         namespace: ${ .namespace }
-#         name: ${ .name }
-#         verb: GET 
+apiVersion: widgets.templates.krateo.io/v1beta1
+kind: Table
+metadata:
+  name: {{ .Values.global.compositionName }}-composition-panel-pods-logs-table
+  namespace: {{ .Values.global.compositionNamespace }}
+spec:
+  apiRef:
+    name: {{ .Values.global.compositionName }}-list-all-resources-to-page-pods-restaction
+    namespace: {{ .Values.global.compositionNamespace }}
+  widgetData:
+    allowedResources:
+    - buttons
+    prefix: admin-page-logs
+    columns:
+    - title: deployment
+      valueKey: deploymentName
+    - title: pod
+      valueKey: podName
+    - title: Status
+      valueKey: status  
+    - title: Logs
+      valueKey: logs_button
+    # - title: OldLogs
+    #   valueKey: old_logs_button
+    # - title: Restart
+    #   valueKey: restart_button
+    data: []
+    pageSize: 10
+  widgetDataTemplate:
+    - forPath: data
+      expression: ${ .list }
+  resourcesRefsTemplate:
+    - iterator: ${ .pods }
+      template:
+        id: ${ .name }
+        apiVersion: widgets.templates.krateo.io/v1beta1
+        resource: buttons
+        namespace: ${ .namespace }
+        name: ${ .name }
+        verb: GET
+    # - iterator: ${ .oldlogs }
+    #   template:
+    #     id: ${ .name }
+    #     apiVersion: widgets.templates.krateo.io/v1beta1
+    #     resource: buttons
+    #     namespace: ${ .namespace }
+    #     name: ${ .name }
+    #     verb: GET
+    # - iterator: ${ .restart }
+    #   template:
+    #     id: ${ .name }
+    #     apiVersion: widgets.templates.krateo.io/v1beta1
+    #     resource: buttons
+    #     namespace: ${ .namespace }
+    #     name: ${ .name }
+    #     verb: GET

@@ -1,11 +1,11 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: PieChart
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   apiRef:
-    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application-action
+    name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application-action
     namespace: {{ .Values.global.compositionNamespace }}
   widgetData:
     title: "10"

@@ -1,22 +1,19 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Panel
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
+  name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-2
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   widgetData:
     actions: {}
     title: Application Status
-    icon:
-      name: fa-cube
-      color: blue
     items:
-      - resourceRefId: composition-overview-row-second-panel-row-pie-chart-application
+      - resourceRefId: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
   resourcesRefs:
     items:
-      - id: composition-overview-row-second-panel-row-pie-chart-application
+      - id: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
         apiVersion: widgets.templates.krateo.io/v1beta1
-        name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
+        name: {{ .Values.global.compositionName }}-composition-overview-row-second-panel-row-pie-chart-application
         namespace: {{ .Values.global.compositionNamespace }}
         resource: piecharts
         verb: GET

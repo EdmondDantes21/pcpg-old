@@ -1,11 +1,11 @@
 apiVersion: widgets.templates.krateo.io/v1beta1
 kind: Table
 metadata:
-  name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-composition-panel-pods-logs-table
+  name: {{ .Values.global.compositionName }}-composition-panel-pods-logs-table
   namespace: {{ .Values.global.compositionNamespace }}
 spec:
   apiRef:
-    name: {{ .Values.global.compositionKind | lower }}-{{ .Values.global.compositionName }}-list-all-resources-to-page-pods-restaction
+    name: {{ .Values.global.compositionName }}-list-all-resources-to-page-pods-restaction
     namespace: {{ .Values.global.compositionNamespace }}
   widgetData:
     allowedResources:
